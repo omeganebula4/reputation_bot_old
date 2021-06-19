@@ -2,6 +2,9 @@ package reputation_bot;
 
 import java.util.List;
 
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
+
 import lib.bot.cmd.AbstractCommand;
 import lib.bot.cmd.annotation.Args;
 import lib.bot.management.PermissionManager;
@@ -15,10 +18,11 @@ public class Setrep extends AbstractCommand {
     }
 
     @Args(min = 2, max = 2)
-    Member name;
+    
     @Override
     public boolean onCommand(MessageReceivedEvent event, String s, String rawArguments, List<String> list) {
-    	if (event.getMessage().getMentionedMembers().isEmpty() == false) {
+    	Member name = null;
+    	if (!event.getMessage().getMentionedMembers().isEmpty()) {
     		if (event.getMessage().getReferencedMessage() == null) {
     			name = event.getMessage().getMentionedMembers().get(0);
     		}
@@ -33,18 +37,25 @@ public class Setrep extends AbstractCommand {
     				return true;
     			}
     		}
-        	String rep = list.get(1);
-    		try {
-    			int repInt = Integer.parseInt(rep);
-    			event.getChannel().sendTyping().queue();
-    	        event.getChannel().sendMessage("Set <@" + name.getId() + ">'s rep to " + repInt).queue();
-    	        //set rep number to 'repInt'
+    		if (!name.getUser().isBot()) {
+    			String rep = list.get(1);
+        		try {
+        			int repInt = Integer.parseInt(rep);
+        			DatabaseInit.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.set("repAmount", repInt));
+        			DatabaseInit.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.set("repAmount", repInt));
+        			DatabaseInit.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.set("repAmount", repInt));
+        			event.getChannel().sendTyping().queue();
+        	        event.getChannel().sendMessage("Set <@" + name.getId() + ">'s rep to " + repInt).queue();
+        		}
+        		catch (NumberFormatException e) {
+        			return true;
+        		}
     		}
-    		catch (NumberFormatException e) {
+    		else if (name.getUser().isBot()) {
     			return true;
     		}
     	}
-    	else if (event.getMessage().getMentionedMembers().isEmpty() == true) {
+    	else if (event.getMessage().getMentionedMembers().isEmpty()) {
     		return true;
     	}
     	return false;

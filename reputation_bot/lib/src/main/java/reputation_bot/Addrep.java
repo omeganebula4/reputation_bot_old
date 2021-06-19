@@ -2,6 +2,9 @@ package reputation_bot;
 
 import java.util.List;
 
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
+
 import lib.bot.cmd.AbstractCommand;
 import lib.bot.cmd.annotation.Args;
 import lib.bot.management.PermissionManager;
@@ -15,10 +18,11 @@ public class Addrep extends AbstractCommand {
     }
 
     @Args(min = 1, max = 2)
-    Member name;
+    
     @Override
     public boolean onCommand(MessageReceivedEvent event, String s, String rawArguments, List<String> list) {
-    	if (event.getMessage().getMentionedMembers().isEmpty() == false) {
+    	Member name = null;
+    	if (!event.getMessage().getMentionedMembers().isEmpty()) {
     		if (event.getMessage().getReferencedMessage() == null) {
     			name = event.getMessage().getMentionedMembers().get(0);
     		}
@@ -33,30 +37,39 @@ public class Addrep extends AbstractCommand {
     				return true;
     			}
     		}
-    		if (list.size() == 1) {
-        		event.getChannel().sendTyping().queue();
-    	        event.getChannel().sendMessage("Added 1 rep to <@" + name.getId() + ">").queue();
-    	        //add 1 rep to user
-        	}
-        	else if (list.size() == 2){
-        		String rep = list.get(1);
-    			try {
-    			    int repInt = Integer.parseInt(rep);
-    			    if (repInt > 0) { 
-    			    	event.getChannel().sendTyping().queue();
-    	            	event.getChannel().sendMessage("Added " + repInt + " rep to <@" + name.getId() + ">").queue();
-    	            	//add 'repInt' rep to user
-    				} 
-    			    else {
-    			    	return true;
-    			    }
-    			}
-    			catch (NumberFormatException e) {
-    			    return true;
-    			}
+    		if (!name.getUser().isBot()) {
+    			if (list.size() == 1) {
+        			DatabaseInit.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
+        			DatabaseInit.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
+        			DatabaseInit.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
+        			event.getChannel().sendTyping().queue();
+        	        event.getChannel().sendMessage("Added 1 rep to <@" + name.getId() + ">").queue();
+            	}
+            	else if (list.size() == 2){
+            		String rep = list.get(1);
+        			try {
+        			    int repInt = Integer.parseInt(rep);
+        			    if (repInt > 0) { 
+        			    	DatabaseInit.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", repInt));
+        			    	DatabaseInit.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", repInt));
+        			    	DatabaseInit.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", repInt));
+        			    	event.getChannel().sendTyping().queue();
+        	            	event.getChannel().sendMessage("Added " + repInt + " rep to <@" + name.getId() + ">").queue();
+        				} 
+        			    else {
+        			    	return true;
+        			    }
+        			}
+        			catch (NumberFormatException e) {
+        			    return true;
+        			}
+        		}
+    		}
+    		else if (name.getUser().isBot()) {
+    			return true;
     		}
     	}
-    	else if (event.getMessage().getMentionedMembers().isEmpty() == true) {
+    	else if (event.getMessage().getMentionedMembers().isEmpty()) {
     		return true;
     	}
     	return false;

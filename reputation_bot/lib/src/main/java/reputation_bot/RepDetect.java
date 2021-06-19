@@ -8,6 +8,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
+
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -20,9 +23,9 @@ public class RepDetect extends ListenerAdapter{
 	int thxTrue = 0;
 
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-		String args = event.getMessage().toString();
+		String args = event.getMessage().getContentStripped();
 		
-		String[] argslist = event.getMessage().getContentRaw().split("\\s+");
+		String[] argslist = event.getMessage().getContentRaw().replaceAll("\\.","").split("\\s+");
 		List<String> list = Arrays.asList(argslist);
 		
 		List<Member> mentioned = event.getMessage().getMentionedMembers();
@@ -30,7 +33,6 @@ public class RepDetect extends ListenerAdapter{
 		List<Member> mentioned_refined = new ArrayList<Member>(linkedHashSet);
 		
 		for (int i = 0; i < list.size(); i++) {
-			
 			if (list.get(i).contains("ty") | list.get(i).contains("Ty") | list.get(i).contains("TY")) {
 				
 				String[] tylist = list.get(i).toLowerCase().split("");
@@ -54,7 +56,7 @@ public class RepDetect extends ListenerAdapter{
             	LinkedHashSet<String> linkedHashSetForThx = new LinkedHashSet<String>(thxArraylist);
             	List<String> refinedThxArraylist = new ArrayList<String>(linkedHashSetForThx);
             	String thxString = String.join("", refinedThxArraylist);
-            	if (thxString.contentEquals("x")) {
+            	if (thxString.contentEquals("x") | thxString.contentEquals("hx")) {
             		thxTrue = 1;
             	}
             	
@@ -94,7 +96,9 @@ public class RepDetect extends ListenerAdapter{
 					else {
 						
 						for (int i = 0; i < mentioned_refined.size(); i++) {
-					    	//give 1 rep to mentioned_refined.get(i)
+							DatabaseInit.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", mentioned_refined.get(i).getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
+		        			DatabaseInit.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", mentioned_refined.get(i).getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
+		        			DatabaseInit.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", mentioned_refined.get(i).getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
 					        names = names + "<@" + mentioned_refined.get(i).getId() + "> ";
 					    }
 						
