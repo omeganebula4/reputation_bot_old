@@ -33,5 +33,6 @@ public class Main {
 		commandManager.addCommandToRoot(new Addrep());
 		commandManager.addCommandToRoot(new Remrep());
 		commandManager.addCommandToRoot(new Setrep());
+		commandManager.addCommandToRoot(new Checkrep());
 	}
 }

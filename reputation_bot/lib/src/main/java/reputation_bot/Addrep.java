@@ -14,10 +14,10 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 public class Addrep extends AbstractCommand {
 
     public Addrep() {
-        super("addrep", "Adds specified number of reps to the specified user.");
+        super("addrep", "Adds specified number of reps to the specified user in the specified collection (weekly/monthly/alltime)");
     }
 
-    @Args(min = 1, max = 2)
+    @Args(min = 2, max = 3)
     
     @Override
     public boolean onCommand(MessageReceivedEvent event, String s, String rawArguments, List<String> list) {
@@ -38,31 +38,81 @@ public class Addrep extends AbstractCommand {
     			}
     		}
     		if (!name.getUser().isBot()) {
-    			if (list.size() == 1) {
-        			DatabaseInit.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
-        			DatabaseInit.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
-        			DatabaseInit.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
-        			event.getChannel().sendTyping().queue();
-        	        event.getChannel().sendMessage("Added 1 rep to <@" + name.getId() + ">").queue();
+    			if (list.size() == 2) {
+    				if (list.get(1).equals("alltime")) {
+    					DatabaseInit.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
+    					event.getChannel().sendTyping().queue();
+            	        event.getChannel().sendMessage("Added 1 rep to <@" + name.getId() + "> (All-time collection)").queue();
+    				}
+    				else if (list.get(1).equals("monthly")) {
+    					DatabaseInit.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
+    					event.getChannel().sendTyping().queue();
+            	        event.getChannel().sendMessage("Added 1 rep to <@" + name.getId() + "> (Weekly collection)").queue();
+    				}
+    				else if (list.get(1).equals("weekly"))  {
+    					DatabaseInit.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
+    					event.getChannel().sendTyping().queue();
+            	        event.getChannel().sendMessage("Added 1 rep to <@" + name.getId() + "> (Weekly collection)").queue();
+    				}
+    				else {
+    					return true;
+    				}
             	}
-            	else if (list.size() == 2){
-            		String rep = list.get(1);
-        			try {
-        			    int repInt = Integer.parseInt(rep);
-        			    if (repInt > 0) { 
-        			    	DatabaseInit.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", repInt));
-        			    	DatabaseInit.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", repInt));
-        			    	DatabaseInit.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", repInt));
-        			    	event.getChannel().sendTyping().queue();
-        	            	event.getChannel().sendMessage("Added " + repInt + " rep to <@" + name.getId() + ">").queue();
-        				} 
-        			    else {
-        			    	return true;
-        			    }
-        			}
-        			catch (NumberFormatException e) {
-        			    return true;
-        			}
+    			
+            	else if (list.size() == 3){
+            		String rep = list.get(2);
+            		if (list.get(1).equals("alltime")) {
+            			try {
+            			    int repInt = Integer.parseInt(rep);
+            			    if (repInt > 0) { 
+            			    	DatabaseInit.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", repInt));
+            			    	event.getChannel().sendTyping().queue();
+            	            	event.getChannel().sendMessage("Added " + repInt + " rep to <@" + name.getId() + "> (All-time collection)").queue();
+            				} 
+            			    else {
+            			    	return true;
+            			    }
+            			}
+            			catch (NumberFormatException e) {
+            			    return true;
+            			}
+    				}
+    				else if (list.get(1).equals("monthly")) {
+            			try {
+            			    int repInt = Integer.parseInt(rep);
+            			    if (repInt > 0) { 
+            			    	DatabaseInit.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", repInt));
+            			    	event.getChannel().sendTyping().queue();
+            	            	event.getChannel().sendMessage("Added " + repInt + " rep to <@" + name.getId() + "> (Monthly collection)").queue();
+            				} 
+            			    else {
+            			    	return true;
+            			    }
+            			}
+            			catch (NumberFormatException e) {
+            			    return true;
+            			}
+    				}
+    				else if (list.get(1).equals("weekly"))  {
+            			try {
+            			    int repInt = Integer.parseInt(rep);
+            			    if (repInt > 0) { 
+            			    	DatabaseInit.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", repInt));
+            			    	event.getChannel().sendTyping().queue();
+            	            	event.getChannel().sendMessage("Added " + repInt + " rep to <@" + name.getId() + "> (Weekly collection)").queue();
+            				} 
+            			    else {
+            			    	return true;
+            			    }
+            			}
+            			catch (NumberFormatException e) {
+            			    return true;
+            			}
+    				}
+    				else {
+    					return true;
+    				}
+            		
         		}
     		}
     		else if (name.getUser().isBot()) {
@@ -83,13 +133,13 @@ public class Addrep extends AbstractCommand {
 
     @Override
     protected String usageMessage() {
-        return "%c [@user] (number of rep)";
+        return "%c [@user] (weekly/monthly/alltime) (number of rep)";
 
     }
 
     @Override
     protected String examplesMessage() {
-        return "%c @User#1234 3 \n" +
-                "Adds 3 reputation points in the balance of User#1234 (default number is 1 if not specified)";
+        return "%c @User#1234 alltime 3 \n" +
+                "Adds 3 reputation points in the alltime balance of User#1234 (default number is 1 if not specified)";
     }
 }

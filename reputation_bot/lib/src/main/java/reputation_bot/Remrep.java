@@ -17,7 +17,7 @@ public class Remrep extends AbstractCommand {
         super("remrep", "Removes specified number of reps from the specified user.");
     }
 
-    @Args(min = 1, max = 2)
+    @Args(min = 2, max = 3)
     
     @Override
     public boolean onCommand(MessageReceivedEvent event, String s, String rawArguments, List<String> list) {
@@ -38,31 +38,81 @@ public class Remrep extends AbstractCommand {
     			}
     		}
     		if (!name.getUser().isBot()) {
-    			if (list.size() == 1) {
-    				DatabaseInit.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", -1));
-    				DatabaseInit.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", -1));
-    				DatabaseInit.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", -1));
-    				event.getChannel().sendTyping().queue();
-        	        event.getChannel().sendMessage("Removed 1 rep from <@" + name.getId() + ">").queue();
+    			if (list.size() == 2) {
+    				if (list.get(1).equals("alltime")) {
+    					DatabaseInit.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
+    					event.getChannel().sendTyping().queue();
+            	        event.getChannel().sendMessage("Removed 1 rep from <@" + name.getId() + "> (All-time collection)").queue();
+    				}
+    				else if (list.get(1).equals("monthly")) {
+    					DatabaseInit.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", -1));
+    					event.getChannel().sendTyping().queue();
+            	        event.getChannel().sendMessage("Removed 1 rep from <@" + name.getId() + "> (Weekly collection)").queue();
+    				}
+    				else if (list.get(1).equals("weekly"))  {
+    					DatabaseInit.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", -1));
+    					event.getChannel().sendTyping().queue();
+            	        event.getChannel().sendMessage("Removed 1 rep from <@" + name.getId() + "> (Weekly collection)").queue();
+    				}
+    				else {
+    					return true;
+    				}
             	}
-            	else if (list.size() == 2){
-            		String rep = list.get(1);
-        			try {
-        			    int repInt = Integer.parseInt(rep);
-        			    if (repInt > 0) { 
-        			    	DatabaseInit.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", -repInt));
-        			    	DatabaseInit.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", -repInt));
-        			    	DatabaseInit.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", -repInt));
-        			    	event.getChannel().sendTyping().queue();
-        	            	event.getChannel().sendMessage("Removed " + repInt + " rep from <@" + name.getId() + ">").queue();
-        				} 
-        			    else {
-        			    	return true;
-        			    }
-        			}
-        			catch (NumberFormatException e) {
-        			    return true;
-        			}
+    			
+            	else if (list.size() == 3){
+            		String rep = list.get(2);
+            		if (list.get(1).equals("alltime")) {
+            			try {
+            			    int repInt = Integer.parseInt(rep);
+            			    if (repInt > 0) { 
+            			    	DatabaseInit.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", -repInt));
+            			    	event.getChannel().sendTyping().queue();
+            	            	event.getChannel().sendMessage("Removed " + repInt + " rep from <@" + name.getId() + "> (All-time collection)").queue();
+            				} 
+            			    else {
+            			    	return true;
+            			    }
+            			}
+            			catch (NumberFormatException e) {
+            			    return true;
+            			}
+    				}
+    				else if (list.get(1).equals("monthly")) {
+            			try {
+            			    int repInt = Integer.parseInt(rep);
+            			    if (repInt > 0) { 
+            			    	DatabaseInit.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", -repInt));
+            			    	event.getChannel().sendTyping().queue();
+            	            	event.getChannel().sendMessage("Removed " + repInt + " rep from <@" + name.getId() + "> (Monthly collection)").queue();
+            				} 
+            			    else {
+            			    	return true;
+            			    }
+            			}
+            			catch (NumberFormatException e) {
+            			    return true;
+            			}
+    				}
+    				else if (list.get(1).equals("weekly"))  {
+            			try {
+            			    int repInt = Integer.parseInt(rep);
+            			    if (repInt > 0) { 
+            			    	DatabaseInit.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", -repInt));
+            			    	event.getChannel().sendTyping().queue();
+            	            	event.getChannel().sendMessage("Removed " + repInt + " rep from <@" + name.getId() + "> (Weekly collection)").queue();
+            				} 
+            			    else {
+            			    	return true;
+            			    }
+            			}
+            			catch (NumberFormatException e) {
+            			    return true;
+            			}
+    				}
+    				else {
+    					return true;
+    				}
+            		
         		}
     		}
     		else if (name.getUser().isBot()) {
