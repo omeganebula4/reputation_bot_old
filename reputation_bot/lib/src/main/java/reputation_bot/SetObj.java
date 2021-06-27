@@ -1,10 +1,13 @@
 package reputation_bot;
 
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+
 public class SetObj {
 
     private long memberID;
     private long guildID;
-    private int repAmount;
+    private long repAmount;
     private String name;
 
     public long getMemberID() {
@@ -23,11 +26,11 @@ public class SetObj {
         this.guildID = guildID;
     }
 
-    public int getRepAmount() {
+    public long getRepAmount() {
         return repAmount;
     }
 
-    public void setRepAmount(int repAmount) {
+    public void setRepAmount(long repAmount) {
         this.repAmount = repAmount;
     }
 
@@ -37,5 +40,10 @@ public class SetObj {
 
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public long getRank(MongoCollection<SetObj> repCol) {
+    	long monthlyRank = repCol.countDocuments(Filters.and(Filters.eq("guildID", Main.guildID), Filters.gt("repAmount", this.getRepAmount()))) + 1;
+    	return monthlyRank;
     }
 }
