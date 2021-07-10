@@ -96,9 +96,9 @@ public class RepDetect extends ListenerAdapter{
 					else {
 						
 						for (int i = 0; i < mentioned_refined.size(); i++) {
-							DatabaseInit.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", mentioned_refined.get(i).getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
-		        			DatabaseInit.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", mentioned_refined.get(i).getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
-		        			DatabaseInit.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", mentioned_refined.get(i).getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
+							ReputationDAO.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", mentioned_refined.get(i).getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
+		        			ReputationDAO.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", mentioned_refined.get(i).getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
+		        			ReputationDAO.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", mentioned_refined.get(i).getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
 					        names = names + "<@" + mentioned_refined.get(i).getId() + "> ";
 					    }
 						

@@ -40,17 +40,17 @@ public class Addrep extends AbstractCommand {
     		if (!name.getUser().isBot()) {
     			if (list.size() == 2) {
     				if (list.get(1).equals("alltime")) {
-    					DatabaseInit.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
+    					ReputationDAO.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
     					event.getChannel().sendTyping().queue();
             	        event.getChannel().sendMessage("Added 1 rep to <@" + name.getId() + "> (All-time collection)").queue();
     				}
     				else if (list.get(1).equals("monthly")) {
-    					DatabaseInit.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
+    					ReputationDAO.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
     					event.getChannel().sendTyping().queue();
             	        event.getChannel().sendMessage("Added 1 rep to <@" + name.getId() + "> (Weekly collection)").queue();
     				}
     				else if (list.get(1).equals("weekly"))  {
-    					DatabaseInit.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
+    					ReputationDAO.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
     					event.getChannel().sendTyping().queue();
             	        event.getChannel().sendMessage("Added 1 rep to <@" + name.getId() + "> (Weekly collection)").queue();
     				}
@@ -65,7 +65,7 @@ public class Addrep extends AbstractCommand {
             			try {
             			    int repInt = Integer.parseInt(rep);
             			    if (repInt > 0) { 
-            			    	DatabaseInit.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", repInt));
+            			    	ReputationDAO.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", repInt));
             			    	event.getChannel().sendTyping().queue();
             	            	event.getChannel().sendMessage("Added " + repInt + " rep to <@" + name.getId() + "> (All-time collection)").queue();
             				} 
@@ -81,7 +81,7 @@ public class Addrep extends AbstractCommand {
             			try {
             			    int repInt = Integer.parseInt(rep);
             			    if (repInt > 0) { 
-            			    	DatabaseInit.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", repInt));
+            			    	ReputationDAO.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", repInt));
             			    	event.getChannel().sendTyping().queue();
             	            	event.getChannel().sendMessage("Added " + repInt + " rep to <@" + name.getId() + "> (Monthly collection)").queue();
             				} 
@@ -97,7 +97,7 @@ public class Addrep extends AbstractCommand {
             			try {
             			    int repInt = Integer.parseInt(rep);
             			    if (repInt > 0) { 
-            			    	DatabaseInit.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", repInt));
+            			    	ReputationDAO.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", repInt));
             			    	event.getChannel().sendTyping().queue();
             	            	event.getChannel().sendMessage("Added " + repInt + " rep to <@" + name.getId() + "> (Weekly collection)").queue();
             				} 

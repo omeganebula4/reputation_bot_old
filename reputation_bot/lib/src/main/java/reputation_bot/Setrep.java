@@ -42,17 +42,17 @@ public class Setrep extends AbstractCommand {
         		try {
         			int repInt = Integer.parseInt(rep);
         			if (list.get(1).equals("alltime")) {
-            			DatabaseInit.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.set("repAmount", repInt));
+            			ReputationDAO.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.set("repAmount", repInt));
     					event.getChannel().sendTyping().queue();
     					event.getChannel().sendMessage("Set <@" + name.getId() + ">'s rep to " + rep + " (All-time collection)").queue();
     				}
     				else if (list.get(1).equals("monthly")) {
-    					DatabaseInit.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.set("repAmount", repInt));
+    					ReputationDAO.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.set("repAmount", repInt));
     					event.getChannel().sendTyping().queue();
     					event.getChannel().sendMessage("Set <@" + name.getId() + ">'s rep to " + rep + " (Monthly collection)").queue();
     				}
     				else if (list.get(1).equals("weekly"))  {
-    					DatabaseInit.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.set("repAmount", repInt));
+    					ReputationDAO.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.set("repAmount", repInt));
     					event.getChannel().sendTyping().queue();
     					event.getChannel().sendMessage("Set <@" + name.getId() + ">'s rep to " + rep + " (Weekly collection)").queue();
     				}

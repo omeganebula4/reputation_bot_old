@@ -24,16 +24,25 @@ public class Main {
 	public static long guildID = 831532447631278146L;
 	
 	public static void main(String[] args) throws LoginException, IOException, InterruptedException {
+		ReputationDAO reputationDAO = new ReputationDAO();
+		
+		UsernameHandler usernameHandler = new UsernameHandler(ReputationDAO.test);
+		@SuppressWarnings("unused")
+		UsernameCache usernameCache = new UsernameCache(usernameHandler);
+		
 		IBotConfig internalConfig = new VolatileBotConfig();
 		InternalBotConfig internalBotConfig = new InternalBotConfig(internalConfig);
 		PermissionManager permissionManager = new PermissionManager(internalBotConfig);
+		
 		ReactionManager reactionManager = new ReactionManager();
 		ExpiringReactionMenuHandler expiringReactionMenuHandler = new ExpiringReactionMenuHandler(reactionManager);
 		CommandHandler commandManager = new CommandHandler(permissionManager, ".r", "ReputationBot", reactionManager, expiringReactionMenuHandler);
+		
 		JDA jdaBuilder = JDABuilder.createDefault("ODMxNTI3NjI0NjA1Njk2MDcy.YHWicg.Z7byFNOYO3mehevrS829xfTgFGQ").enableIntents(GatewayIntent.GUILD_MEMBERS).setMemberCachePolicy(MemberCachePolicy.ALL).setActivity(Activity.watching("The Rep Economy Grow")).build();
 		jdaBuilder.addEventListener(commandManager);
 		jdaBuilder.addEventListener(new RepDetect());
-		jdaBuilder.addEventListener(new DatabaseInit());
+		jdaBuilder.addEventListener(new ReputationDAO());
+		jdaBuilder.addEventListener(new MemberHandler(reputationDAO));
 		commandManager.addCommandToRoot(new Addrep());
 		commandManager.addCommandToRoot(new Remrep());
 		commandManager.addCommandToRoot(new Setrep());

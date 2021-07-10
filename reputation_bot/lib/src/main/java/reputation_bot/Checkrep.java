@@ -72,12 +72,12 @@ public class Checkrep extends AbstractCommand {
     	}
     	
     	if (name != null & !name.isBot()) {
-    		repNumAlltime = DatabaseInit.alltimeCollection.find(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID))).first().getRepAmount();
-    		alltimeRank = DatabaseInit.alltimeCollection.countDocuments(Filters.and(Filters.eq("guildID", Main.guildID), Filters.gt("repAmount", repNumAlltime))) + 1;
-    		repNumWeekly = DatabaseInit.weeklyCollection.find(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID))).first().getRepAmount();
-    		weeklyRank = DatabaseInit.weeklyCollection.countDocuments(Filters.and(Filters.eq("guildID", Main.guildID), Filters.gt("repAmount", repNumWeekly))) + 1;
-    		repNumMonthly = DatabaseInit.monthlyCollection.find(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID))).first().getRepAmount();
-    		monthlyRank = DatabaseInit.monthlyCollection.countDocuments(Filters.and(Filters.eq("guildID", Main.guildID), Filters.gt("repAmount", repNumMonthly))) + 1;
+    		repNumAlltime = ReputationDAO.alltimeCollection.find(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID))).first().getRepAmount();
+    		alltimeRank = ReputationDAO.alltimeCollection.countDocuments(Filters.and(Filters.eq("guildID", Main.guildID), Filters.gt("repAmount", repNumAlltime))) + 1;
+    		repNumWeekly = ReputationDAO.weeklyCollection.find(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID))).first().getRepAmount();
+    		weeklyRank = ReputationDAO.weeklyCollection.countDocuments(Filters.and(Filters.eq("guildID", Main.guildID), Filters.gt("repAmount", repNumWeekly))) + 1;
+    		repNumMonthly = ReputationDAO.monthlyCollection.find(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID))).first().getRepAmount();
+    		monthlyRank = ReputationDAO.monthlyCollection.countDocuments(Filters.and(Filters.eq("guildID", Main.guildID), Filters.gt("repAmount", repNumMonthly))) + 1;
     		
     		EmbedBuilder authorRank = new EmbedBuilder();
     		authorRank.setTitle(name.getName() + "'s Reputation Information");
