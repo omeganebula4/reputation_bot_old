@@ -25,6 +25,7 @@ public class Main {
 	
 	public static void main(String[] args) throws LoginException, IOException, InterruptedException {
 		ReputationDAO reputationDAO = new ReputationDAO();
+		reputationDAO.MainInit();
 		
 		UsernameHandler usernameHandler = new UsernameHandler(ReputationDAO.test);
 		@SuppressWarnings("unused")
@@ -40,12 +41,11 @@ public class Main {
 		
 		JDA jdaBuilder = JDABuilder.createDefault("ODMxNTI3NjI0NjA1Njk2MDcy.YHWicg.Z7byFNOYO3mehevrS829xfTgFGQ").enableIntents(GatewayIntent.GUILD_MEMBERS).setMemberCachePolicy(MemberCachePolicy.ALL).setActivity(Activity.watching("The Rep Economy Grow")).build();
 		jdaBuilder.addEventListener(commandManager);
-		jdaBuilder.addEventListener(new RepDetect());
-		jdaBuilder.addEventListener(new ReputationDAO());
+		jdaBuilder.addEventListener(new RepDetect(reputationDAO));
 		jdaBuilder.addEventListener(new MemberHandler(reputationDAO));
-		commandManager.addCommandToRoot(new Addrep());
-		commandManager.addCommandToRoot(new Remrep());
-		commandManager.addCommandToRoot(new Setrep());
-		commandManager.addCommandToRoot(new Checkrep());
+		commandManager.addCommandToRoot(new Addrep(reputationDAO));
+		commandManager.addCommandToRoot(new Remrep(reputationDAO));
+		commandManager.addCommandToRoot(new Setrep(reputationDAO));
+		commandManager.addCommandToRoot(new Checkrep(reputationDAO));
 	}
 }

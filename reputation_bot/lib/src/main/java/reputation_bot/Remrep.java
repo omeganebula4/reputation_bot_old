@@ -12,9 +12,10 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class Remrep extends AbstractCommand {
-
-    public Remrep() {
-        super("remrep", "Removes specified number of reps from the specified user.");
+	private ReputationDAO reputationDAO;
+    public Remrep(ReputationDAO reputationDAO) {
+        super("remrep", "Removes specified number of reps from the specified user in the specified database.");
+        this.reputationDAO = reputationDAO;
     }
 
     @Args(min = 2, max = 3)
@@ -40,17 +41,17 @@ public class Remrep extends AbstractCommand {
     		if (!name.getUser().isBot()) {
     			if (list.size() == 2) {
     				if (list.get(1).equals("alltime")) {
-    					ReputationDAO.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
+    					reputationDAO.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
     					event.getChannel().sendTyping().queue();
             	        event.getChannel().sendMessage("Removed 1 rep from <@" + name.getId() + "> (All-time collection)").queue();
     				}
     				else if (list.get(1).equals("monthly")) {
-    					ReputationDAO.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", -1));
+    					reputationDAO.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", -1));
     					event.getChannel().sendTyping().queue();
             	        event.getChannel().sendMessage("Removed 1 rep from <@" + name.getId() + "> (Weekly collection)").queue();
     				}
     				else if (list.get(1).equals("weekly"))  {
-    					ReputationDAO.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", -1));
+    					reputationDAO.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", -1));
     					event.getChannel().sendTyping().queue();
             	        event.getChannel().sendMessage("Removed 1 rep from <@" + name.getId() + "> (Weekly collection)").queue();
     				}
@@ -65,7 +66,7 @@ public class Remrep extends AbstractCommand {
             			try {
             			    int repInt = Integer.parseInt(rep);
             			    if (repInt > 0) { 
-            			    	ReputationDAO.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", -repInt));
+            			    	reputationDAO.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", -repInt));
             			    	event.getChannel().sendTyping().queue();
             	            	event.getChannel().sendMessage("Removed " + repInt + " rep from <@" + name.getId() + "> (All-time collection)").queue();
             				} 
@@ -81,7 +82,7 @@ public class Remrep extends AbstractCommand {
             			try {
             			    int repInt = Integer.parseInt(rep);
             			    if (repInt > 0) { 
-            			    	ReputationDAO.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", -repInt));
+            			    	reputationDAO.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", -repInt));
             			    	event.getChannel().sendTyping().queue();
             	            	event.getChannel().sendMessage("Removed " + repInt + " rep from <@" + name.getId() + "> (Monthly collection)").queue();
             				} 
@@ -97,7 +98,7 @@ public class Remrep extends AbstractCommand {
             			try {
             			    int repInt = Integer.parseInt(rep);
             			    if (repInt > 0) { 
-            			    	ReputationDAO.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", -repInt));
+            			    	reputationDAO.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", -repInt));
             			    	event.getChannel().sendTyping().queue();
             	            	event.getChannel().sendMessage("Removed " + repInt + " rep from <@" + name.getId() + "> (Weekly collection)").queue();
             				} 
@@ -133,13 +134,13 @@ public class Remrep extends AbstractCommand {
 
     @Override
     protected String usageMessage() {
-        return "%c [@user] (number of rep)";
+        return "%c [@user] weekly/monthly/alltime (number of rep)";
 
     }
 
     @Override
     protected String examplesMessage() {
-        return "%c @User#1234 3 \n" +
-                "Removes 3 reputation points from the balance of User#1234 (default number is 1 if not specified)";
+        return "%c @User#1234 weekly 3 \n" +
+                "Removes 3 reputation points from the balance of User#1234 in the weekly database (default number is 1 if not specified)";
     }
 }

@@ -5,7 +5,6 @@ import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.function.Consumer;
 
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
@@ -21,15 +20,9 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 
 import lib.bot.utils.MonthlyTimer;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.ReadyEvent;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 
-public class ReputationDAO extends ListenerAdapter{
+public class ReputationDAO{
 	
 	static CodecRegistry pojoCodecRegistry = fromRegistries(
             MongoClientSettings.getDefaultCodecRegistry(),
@@ -44,9 +37,9 @@ public class ReputationDAO extends ListenerAdapter{
     
 	static MongoClient mongoClient = MongoClients.create(settings);
 	static MongoDatabase test;
-	static MongoCollection<ReputationData> alltimeCollection;
-	static MongoCollection<ReputationData> monthlyCollection;
-	static MongoCollection<ReputationData> weeklyCollection;
+	MongoCollection<ReputationData> alltimeCollection;
+	MongoCollection<ReputationData> monthlyCollection;
+	MongoCollection<ReputationData> weeklyCollection;
 	
 	Timer weeklyTimer = new Timer();
 	TimerTask weeklyTimerTask = new TimerTask() {
@@ -74,12 +67,8 @@ public class ReputationDAO extends ListenerAdapter{
 	        cursor.close();
 	    }
     });
-	
-	@Override
-	public void onReady(ReadyEvent event) {
-        System.out.println("API is ready!");
-        
-        
+
+	public void MainInit() {
         test = mongoClient.getDatabase("test");
         alltimeCollection = test.getCollection("alltimeCollection", ReputationData.class);
         monthlyCollection = test.getCollection("monthlyCollection", ReputationData.class);

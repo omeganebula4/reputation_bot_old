@@ -17,10 +17,14 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class RepDetect extends ListenerAdapter{
 	
+	private ReputationDAO reputationDAO;
+	public RepDetect(ReputationDAO reputationDAO) {
+		this.reputationDAO = reputationDAO;
+	}
+	
 	volatile List<Long> prison = new ArrayList<Long>();
 	ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-	int tyTrue = 0;
-	int thxTrue = 0;
+	
 
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 		String args = event.getMessage().getContentStripped();
@@ -31,6 +35,9 @@ public class RepDetect extends ListenerAdapter{
 		List<Member> mentioned = event.getMessage().getMentionedMembers();
 		LinkedHashSet<Member> linkedHashSet = new LinkedHashSet<Member>(mentioned);
 		List<Member> mentioned_refined = new ArrayList<Member>(linkedHashSet);
+		
+		int tyTrue = 0;
+		int thxTrue = 0;
 		
 		for (int i = 0; i < list.size(); i++) {
 			if (list.get(i).contains("ty") | list.get(i).contains("Ty") | list.get(i).contains("TY")) {
@@ -96,9 +103,9 @@ public class RepDetect extends ListenerAdapter{
 					else {
 						
 						for (int i = 0; i < mentioned_refined.size(); i++) {
-							ReputationDAO.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", mentioned_refined.get(i).getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
-		        			ReputationDAO.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", mentioned_refined.get(i).getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
-		        			ReputationDAO.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", mentioned_refined.get(i).getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
+							reputationDAO.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", mentioned_refined.get(i).getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
+		        			reputationDAO.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", mentioned_refined.get(i).getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
+		        			reputationDAO.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", mentioned_refined.get(i).getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
 					        names = names + "<@" + mentioned_refined.get(i).getId() + "> ";
 					    }
 						
