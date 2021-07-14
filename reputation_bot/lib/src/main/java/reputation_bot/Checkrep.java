@@ -14,11 +14,10 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class Checkrep extends AbstractCommand {
-	
-	private ReputationDAO reputationDAO;
-	public Checkrep(ReputationDAO reputationDAO) {
+	public Checkrep() {
         super("checkrep", "Displays the rank and rep information about the user specified or the author.");
-        this.reputationDAO = reputationDAO;
+        //String[] aliases = {"rep"};
+        //List<String> aliasList = new ArrayList<>(Arrays.asList(aliases));
 	}
 
     @Args(min = 0, max = 1)
@@ -73,12 +72,12 @@ public class Checkrep extends AbstractCommand {
     	}
     	
     	if (name != null & !name.isBot()) {
-    		repNumAlltime = reputationDAO.alltimeCollection.find(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID))).first().getRepAmount();
-    		alltimeRank = reputationDAO.alltimeCollection.countDocuments(Filters.and(Filters.eq("guildID", Main.guildID), Filters.gt("repAmount", repNumAlltime))) + 1;
-    		repNumWeekly = reputationDAO.weeklyCollection.find(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID))).first().getRepAmount();
-    		weeklyRank = reputationDAO.weeklyCollection.countDocuments(Filters.and(Filters.eq("guildID", Main.guildID), Filters.gt("repAmount", repNumWeekly))) + 1;
-    		repNumMonthly = reputationDAO.monthlyCollection.find(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID))).first().getRepAmount();
-    		monthlyRank = reputationDAO.monthlyCollection.countDocuments(Filters.and(Filters.eq("guildID", Main.guildID), Filters.gt("repAmount", repNumMonthly))) + 1;
+    		repNumAlltime = ReputationDAO.alltimeCollection.find(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID))).first().getRepAmount();
+    		alltimeRank = ReputationDAO.alltimeCollection.countDocuments(Filters.and(Filters.eq("guildID", Main.guildID), Filters.gt("repAmount", repNumAlltime))) + 1;
+    		repNumWeekly = ReputationDAO.weeklyCollection.find(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID))).first().getRepAmount();
+    		weeklyRank = ReputationDAO.weeklyCollection.countDocuments(Filters.and(Filters.eq("guildID", Main.guildID), Filters.gt("repAmount", repNumWeekly))) + 1;
+    		repNumMonthly = ReputationDAO.monthlyCollection.find(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID))).first().getRepAmount();
+    		monthlyRank = ReputationDAO.monthlyCollection.countDocuments(Filters.and(Filters.eq("guildID", Main.guildID), Filters.gt("repAmount", repNumMonthly))) + 1;
     		
     		EmbedBuilder authorRank = new EmbedBuilder();
     		authorRank.setTitle(name.getName() + "'s Reputation Information");
