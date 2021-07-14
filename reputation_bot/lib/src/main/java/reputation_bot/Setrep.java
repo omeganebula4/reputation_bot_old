@@ -12,9 +12,11 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class Setrep extends AbstractCommand {
-
-    public Setrep() {
-        super("setrep", "Sets the number of rep of the specified user to the specified number.");
+	
+	private ReputationDAO reputationDAO;
+    public Setrep(ReputationDAO reputationDAO) {
+        super("setrep", "Sets the number of rep of the specified user to the specified number in the specified database.");
+        this.reputationDAO = reputationDAO;
     }
 
     @Args(min = 3, max = 3)
@@ -42,17 +44,17 @@ public class Setrep extends AbstractCommand {
         		try {
         			int repInt = Integer.parseInt(rep);
         			if (list.get(1).equals("alltime")) {
-            			ReputationDAO.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.set("repAmount", repInt));
+            			reputationDAO.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.set("repAmount", repInt));
     					event.getChannel().sendTyping().queue();
     					event.getChannel().sendMessage("Set <@" + name.getId() + ">'s rep to " + rep + " (All-time collection)").queue();
     				}
     				else if (list.get(1).equals("monthly")) {
-    					ReputationDAO.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.set("repAmount", repInt));
+    					reputationDAO.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.set("repAmount", repInt));
     					event.getChannel().sendTyping().queue();
     					event.getChannel().sendMessage("Set <@" + name.getId() + ">'s rep to " + rep + " (Monthly collection)").queue();
     				}
     				else if (list.get(1).equals("weekly"))  {
-    					ReputationDAO.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.set("repAmount", repInt));
+    					reputationDAO.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.set("repAmount", repInt));
     					event.getChannel().sendTyping().queue();
     					event.getChannel().sendMessage("Set <@" + name.getId() + ">'s rep to " + rep + " (Weekly collection)").queue();
     				}
@@ -82,13 +84,13 @@ public class Setrep extends AbstractCommand {
 
     @Override
     protected String usageMessage() {
-        return "%c [@user] (number of rep)";
+        return "%c [@user] (weekly/monthly/alltime) (number of rep)";
 
     }
 
     @Override
     protected String examplesMessage() {
-        return "%c @User#1234 3 \n" +
-                "Sets the number of rep of @User#1234 to 3.";
+        return "%c @User#1234 monthly 3 \n" +
+                "Sets the number of rep of @User#1234 in the monthly database to 3.";
     }
 }
