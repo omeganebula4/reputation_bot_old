@@ -24,106 +24,53 @@ public class Addrep extends AbstractCommand {
     @Override
     public boolean onCommand(MessageReceivedEvent event, String s, String rawArguments, List<String> list) {
     	Member name = null;
-    	if (!event.getMessage().getMentionedMembers().isEmpty()) {
-    		if (event.getMessage().getReferencedMessage() == null) {
-    			name = event.getMessage().getMentionedMembers().get(0);
-    		}
-    		else if (event.getMessage().getReferencedMessage() != null){
-    			if (event.getMessage().getMentionedMembers().size() == 2) {
-    				name = event.getMessage().getMentionedMembers().get(1);
-    			}
-    			else if (event.getMessage().getMentionedMembers().size() == 1) {
-    				name = event.getMessage().getMentionedMembers().get(0);
-    			}
-    			else {
-    				return true;
-    			}
-    		}
-    		if (!name.getUser().isBot()) {
-    			if (list.size() == 2) {
-    				if (list.get(1).equals("alltime")) {
-    					reputationDAO.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
-    					event.getChannel().sendTyping().queue();
-            	        event.getChannel().sendMessage("Added 1 rep to <@" + name.getId() + "> (All-time collection)").queue();
-    				}
-    				else if (list.get(1).equals("monthly")) {
-    					reputationDAO.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
-    					event.getChannel().sendTyping().queue();
-            	        event.getChannel().sendMessage("Added 1 rep to <@" + name.getId() + "> (Weekly collection)").queue();
-    				}
-    				else if (list.get(1).equals("weekly"))  {
-    					reputationDAO.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
-    					event.getChannel().sendTyping().queue();
-            	        event.getChannel().sendMessage("Added 1 rep to <@" + name.getId() + "> (Weekly collection)").queue();
-    				}
-    				else {
-    					return true;
-    				}
-            	}
-    			
-            	else if (list.size() == 3){
-            		String rep = list.get(2);
-            		if (list.get(1).equals("alltime")) {
-            			try {
-            			    int repInt = Integer.parseInt(rep);
-            			    if (repInt > 0) { 
-            			    	reputationDAO.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", repInt));
-            			    	event.getChannel().sendTyping().queue();
-            	            	event.getChannel().sendMessage("Added " + repInt + " rep to <@" + name.getId() + "> (All-time collection)").queue();
-            				} 
-            			    else {
-            			    	return true;
-            			    }
-            			}
-            			catch (NumberFormatException e) {
-            			    return true;
-            			}
-    				}
-    				else if (list.get(1).equals("monthly")) {
-            			try {
-            			    int repInt = Integer.parseInt(rep);
-            			    if (repInt > 0) { 
-            			    	reputationDAO.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", repInt));
-            			    	event.getChannel().sendTyping().queue();
-            	            	event.getChannel().sendMessage("Added " + repInt + " rep to <@" + name.getId() + "> (Monthly collection)").queue();
-            				} 
-            			    else {
-            			    	return true;
-            			    }
-            			}
-            			catch (NumberFormatException e) {
-            			    return true;
-            			}
-    				}
-    				else if (list.get(1).equals("weekly"))  {
-            			try {
-            			    int repInt = Integer.parseInt(rep);
-            			    if (repInt > 0) { 
-            			    	reputationDAO.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", repInt));
-            			    	event.getChannel().sendTyping().queue();
-            	            	event.getChannel().sendMessage("Added " + repInt + " rep to <@" + name.getId() + "> (Weekly collection)").queue();
-            				} 
-            			    else {
-            			    	return true;
-            			    }
-            			}
-            			catch (NumberFormatException e) {
-            			    return true;
-            			}
-    				}
-    				else {
-    					return true;
-    				}
-            		
-        		}
-    		}
-    		else if (name.getUser().isBot()) {
-    			return true;
-    		}
-    	}
-    	else if (event.getMessage().getMentionedMembers().isEmpty()) {
+    	int replyInt = CommandDetectionUtil.ReplyDetection(event);
+    	switch(replyInt) {
+    	case 0:
     		return true;
+		case 1:
+    		name = event.getMessage().getMentionedMembers().get(0);
+    		break;
+    	case 2:
+    		name = event.getMessage().getMentionedMembers().get(1);
+    		break;
     	}
+    	
+    	int repInt = CommandDetectionUtil.RepDetection(name, event, list);
+    	switch(repInt) {
+    	case 0:
+    		return true;
+    	case 1:
+    		reputationDAO.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
+			event.getChannel().sendTyping().queue();
+	        event.getChannel().sendMessage("Added 1 rep to <@" + name.getId() + "> (Weekly collection)").queue();
+	        break;
+    	case 2:
+    		reputationDAO.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
+    		event.getChannel().sendTyping().queue();
+    		event.getChannel().sendMessage("Added 1 rep to <@" + name.getId() + "> (Monthly collection)").queue();
+        	break;
+    	case 3:
+    		reputationDAO.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", 1));
+    		event.getChannel().sendTyping().queue();
+    		event.getChannel().sendMessage("Added 1 rep to <@" + name.getId() + "> (Alltime collection)").queue();
+        	break;
+    	case 4:
+    		reputationDAO.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", Integer.parseInt(list.get(2))));
+    		event.getChannel().sendTyping().queue();
+    		event.getChannel().sendMessage("Added " + list.get(2) + " rep to <@" + name.getId() + "> (Weekly collection)").queue();
+        	break;
+    	case 5:
+    		reputationDAO.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", Integer.parseInt(list.get(2))));
+    		event.getChannel().sendTyping().queue();
+    		event.getChannel().sendMessage("Added " + list.get(2) + " rep to <@" + name.getId() + "> (Monthly collection)").queue();
+        	break;
+    	case 6:
+    		reputationDAO.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.inc("repAmount", Integer.parseInt(list.get(2))));
+    		event.getChannel().sendTyping().queue();
+    		event.getChannel().sendMessage("Added " + list.get(2) + " rep to <@" + name.getId() + "> (Alltime collection)").queue();
+        	break;
+		}
     	return false;
     }
 

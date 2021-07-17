@@ -60,7 +60,7 @@ public class ReputationDAO{
     	FindIterable<ReputationData> fi = monthlyCollection.find();
 	    MongoCursor<ReputationData> cursor = fi.iterator();
 	    try {
-	        while(cursor.hasNext()) {               
+	        while(cursor.hasNext()) {
 	        	monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", cursor.next().getMemberID()), Filters.eq("guildID", Main.guildID)), Updates.set("repAmount", 0));
 	        }
 	    } finally {

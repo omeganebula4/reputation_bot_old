@@ -24,56 +24,41 @@ public class Setrep extends AbstractCommand {
     @Override
     public boolean onCommand(MessageReceivedEvent event, String s, String rawArguments, List<String> list) {
     	Member name = null;
-    	if (!event.getMessage().getMentionedMembers().isEmpty()) {
-    		if (event.getMessage().getReferencedMessage() == null) {
-    			name = event.getMessage().getMentionedMembers().get(0);
-    		}
-    		else if (event.getMessage().getReferencedMessage() != null){
-    			if (event.getMessage().getMentionedMembers().size() == 2) {
-    				name = event.getMessage().getMentionedMembers().get(1);
-    			}
-    			else if (event.getMessage().getMentionedMembers().size() == 1) {
-    				name = event.getMessage().getMentionedMembers().get(0);
-    			}
-    			else {
-    				return true;
-    			}
-    		}
-    		if (!name.getUser().isBot()) {
-    			String rep = list.get(2);
-        		try {
-        			int repInt = Integer.parseInt(rep);
-        			if (list.get(1).equals("alltime")) {
-            			reputationDAO.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.set("repAmount", repInt));
-    					event.getChannel().sendTyping().queue();
-    					event.getChannel().sendMessage("Set <@" + name.getId() + ">'s rep to " + rep + " (All-time collection)").queue();
-    				}
-    				else if (list.get(1).equals("monthly")) {
-    					reputationDAO.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.set("repAmount", repInt));
-    					event.getChannel().sendTyping().queue();
-    					event.getChannel().sendMessage("Set <@" + name.getId() + ">'s rep to " + rep + " (Monthly collection)").queue();
-    				}
-    				else if (list.get(1).equals("weekly"))  {
-    					reputationDAO.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.set("repAmount", repInt));
-    					event.getChannel().sendTyping().queue();
-    					event.getChannel().sendMessage("Set <@" + name.getId() + ">'s rep to " + rep + " (Weekly collection)").queue();
-    				}
-    				else {
-    					return true;
-    				}
-        		}
-        		catch (NumberFormatException e) {
-        			return true;
-        		}
-    		}
-    		else if (name.getUser().isBot()) {
-    			return true;
-    		}
-    	}
-    	else if (event.getMessage().getMentionedMembers().isEmpty()) {
+    	
+    	int replyInt = CommandDetectionUtil.ReplyDetection(event);
+    	switch(replyInt) {
+    	case 0:
     		return true;
+		case 1:
+    		name = event.getMessage().getMentionedMembers().get(0);
+    		break;
+    	case 2:
+    		name = event.getMessage().getMentionedMembers().get(1);
+    		break;
     	}
-    	return false;
+    	
+    	int repInt = CommandDetectionUtil.RepDetectionForSetrep(name, event, list);
+    	switch(repInt) {
+    	case 0:
+    		return true;
+    	case 1:
+    		reputationDAO.weeklyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.set("repAmount", Integer.parseInt(list.get(2))));
+    		event.getChannel().sendTyping().queue();
+    		event.getChannel().sendMessage("Set <@" + name.getId() + ">'s weekly rep balance to " + list.get(2)).queue();
+        	break;
+    	case 2:
+    		reputationDAO.monthlyCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.set("repAmount", Integer.parseInt(list.get(2))));
+    		event.getChannel().sendTyping().queue();
+    		event.getChannel().sendMessage("Set <@" + name.getId() + ">'s monthly rep balance to " + list.get(2)).queue();
+        	break;
+    	case 3:
+    		reputationDAO.alltimeCollection.updateOne(Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)), Updates.set("repAmount", Integer.parseInt(list.get(2))));
+    		event.getChannel().sendTyping().queue();
+    		event.getChannel().sendMessage("Set <@" + name.getId() + ">'s alltime rep balance to " + list.get(2)).queue();
+        	break;
+    	}
+    	
+		return false;
     }
 
     @Override
