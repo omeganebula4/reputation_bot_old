@@ -5,10 +5,19 @@ import java.util.List;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class CommandDetectionUtil {
+	
+    public static boolean hasPerms(Member member, Guild guild){
+        if(member==null) return false;
+        if(member.getIdLong()==791217248693780501L) return true;
+        if(guild==null) return false;
+        return member.hasPermission(Permission.ADMINISTRATOR);
+    }
 	
 	public static boolean isInteger(String s) {
 	    try { 
@@ -38,7 +47,7 @@ public class CommandDetectionUtil {
     	else {return false;}
     }
 	
-    public static int ReplyDetection(MessageReceivedEvent event) {
+    public static int ReplyDetection(MessageReceivedEvent event, List<String> list, MongoCollection<ReputationData> alltimecoll) {
         int returnint = 0;
         if (!event.getMessage().getMentionedMembers().isEmpty()) {
             if (event.getMessage().getReferencedMessage() == null & event.getMessage().getMentionedMembers().size() == 1) {	//no reply, message mention
@@ -58,6 +67,15 @@ public class CommandDetectionUtil {
             else {
             	returnint = 0;
             }
+        }
+        else  if (isLong(list.get(0))) {
+        	long memberID = Long.parseLong(list.get(0)); 
+			if (MemberExist(alltimecoll, memberID)) {
+				returnint = 3;
+			}
+			else {
+				returnint = 0;
+			}
         }
         else {
         	returnint = 0;

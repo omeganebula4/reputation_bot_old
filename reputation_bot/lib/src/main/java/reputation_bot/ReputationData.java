@@ -1,5 +1,10 @@
 package reputation_bot;
 
+import org.bson.codecs.pojo.annotations.BsonIgnore;
+
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+
 public class ReputationData {
 
     private long memberID;
@@ -37,5 +42,10 @@ public class ReputationData {
 
     public void setName(String name) {
         this.name = name;
+    }
+    
+    @BsonIgnore
+    public long getRank(MongoCollection<ReputationData> rankCol) {
+    	return (rankCol.countDocuments(Filters.and(Filters.eq("guildID", Main.guildID), Filters.gt("repAmount", this.repAmount))) + 1);
     }
 }

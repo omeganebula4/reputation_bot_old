@@ -22,11 +22,11 @@ public class RepDetect extends ListenerAdapter{
 		this.reputationDAO = reputationDAO;
 	}
 	
-	volatile List<Long> prison = new ArrayList<Long>();
 	ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-	
+	volatile List<Long> prison = new ArrayList<Long>();
 
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
+		
 		String args = event.getMessage().getContentStripped();
 		
 		String[] argslist = event.getMessage().getContentRaw().replaceAll("\\.","").split("\\s+");
@@ -70,7 +70,7 @@ public class RepDetect extends ListenerAdapter{
 			}
 			
 		}
-		if (tyTrue == 1 | thxTrue == 1 | list.contains("tyty") | list.contains("Tyty") | args.contains("thank") | args.contains("Thank") | args.contains("Thanx") | args.contains("thanx") | args.contains("tysm") | args.contains("Tysm")) {
+		if (tyTrue == 1 | thxTrue == 1 | list.contains("tyty") | list.contains("Tyty") | args.contains("thank") | args.contains("Thank") | args.contains("Thanx") | args.contains("thanx") | args.contains("tysm") | args.contains("Tysm") | args.contains("Thnx") | args.contains("thnx")) {
 			
 			tyTrue = 0;
 			thxTrue = 0;
@@ -115,7 +115,7 @@ public class RepDetect extends ListenerAdapter{
 						prison.add(event.getAuthor().getIdLong());
 						scheduler.schedule(() -> {
 							prison.remove(event.getAuthor().getIdLong());
-						}, 20, TimeUnit.SECONDS);
+						}, 50, TimeUnit.SECONDS);
 						
 					}
 					
