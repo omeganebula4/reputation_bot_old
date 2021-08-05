@@ -3,15 +3,19 @@ package reputation_bot;
 import java.util.Collections;
 import java.util.List;
 
+import com.mongodb.client.MongoCollection;
+
 import lib.bot.cmd.AbstractCommand;
 import lib.bot.cmd.annotation.Args;
 import lib.bot.management.PermissionManager;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.interaction.SelectionMenuEvent;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
 
 public class LeaderboardCmd extends AbstractCommand {
+	
+	public static Member author = null;
+	
 	private ReputationDAO reputationDAO;
     public LeaderboardCmd(ReputationDAO reputationDAO) {
         super("leaderboard", "Shows the reputation leaderboard rankings.");
@@ -22,9 +26,10 @@ public class LeaderboardCmd extends AbstractCommand {
     
     @Override
     public boolean onCommand(MessageReceivedEvent event, String s, String rawArguments, List<String> list) {
-    	EmbedBuilder embedBuilder = null;
     	if (event.getGuild().getIdLong() == Main.guildID) {
+    		
 	    	if (list.size() == 0) {
+	    		author = event.getMember();
 	    		SelectionMenu menu = SelectionMenu.create("leaderboard-selection")
 	    			     .setPlaceholder("Choose the leaderboard.") // shows the placeholder indicating what this menu is for
 	    			     .setRequiredRange(1, 1) // only one can be selected
@@ -35,22 +40,31 @@ public class LeaderboardCmd extends AbstractCommand {
 	    		event.getChannel().sendMessage("Select the leaderboard to be displayed.")
 	    			.setActionRow(menu).queue();
 	    	}
+	    	
 	    	else if (list.size() == 1) {
+	    		author = event.getMember();
+	    		MongoCollection<ReputationData> repCol = null;
+	    		String leaderboardName = null;
+	    		
 	    		switch(list.get(0)) {
 	    		case "weekly":
-	    			embedBuilder = LeaderboardEmbedBuilder.EmbedBuild("Weekly Leaderboard");
+	    			repCol = reputationDAO.weeklyCollection;
+	    			leaderboardName = "Weekly Leaderboard";
 	    			break;
 	    		case "monthly":
-	    			embedBuilder = LeaderboardEmbedBuilder.EmbedBuild("Monthly Leaderboard");
+	    			repCol = reputationDAO.monthlyCollection;
+	    			leaderboardName = "Monthly Leaderboard";
 	    			break;
 	    		case "alltime":
-	    			embedBuilder = LeaderboardEmbedBuilder.EmbedBuild("All-time Leaderboard");
+	    			repCol = reputationDAO.alltimeCollection;
+	    			leaderboardName = "All-time Leaderboard";
 	    			break;
 	    		default:
 	    			return true;
 	    		}
-	    		event.getChannel().sendMessageEmbeds(embedBuilder.build()).queue();
-	    		embedBuilder.clear();
+	    		
+	    		LeaderboardEmbedManager embedManager = new LeaderboardEmbedManager(repCol, leaderboardName);
+	    		embedManager.sendEmbed(event.getChannel());
 	    	}
 	    	else {
 	    		return true;

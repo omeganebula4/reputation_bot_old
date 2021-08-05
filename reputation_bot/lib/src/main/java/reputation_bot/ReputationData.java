@@ -10,7 +10,6 @@ public class ReputationData {
     private long memberID;
     private long guildID;
     private long repAmount;
-    private String name;
 
     public long getMemberID() {
         return memberID;
@@ -34,14 +33,6 @@ public class ReputationData {
 
     public void setRepAmount(long repAmount) {
         this.repAmount = repAmount;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
     
     @BsonIgnore

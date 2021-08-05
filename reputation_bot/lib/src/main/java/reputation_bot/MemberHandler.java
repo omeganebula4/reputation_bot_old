@@ -27,7 +27,6 @@ class MemberConsumer implements Consumer<Member> {
 				memberObj.setGuildID(Main.guildID);
 				memberObj.setMemberID(member.getIdLong());
 				memberObj.setRepAmount(0);
-				memberObj.setName(member.getEffectiveName());
 				
 				reputationDAO.alltimeCollection.insertOne(memberObj);
 				reputationDAO.monthlyCollection.insertOne(memberObj);
@@ -64,7 +63,6 @@ public class MemberHandler extends ListenerAdapter{
 				memberObj.setGuildID(Main.guildID);
 				memberObj.setMemberID(newMember.getIdLong());
 				memberObj.setRepAmount(0);
-				memberObj.setName(newMember.getEffectiveName());
 				
 				reputationDAO.alltimeCollection.insertOne(memberObj);
 				reputationDAO.monthlyCollection.insertOne(memberObj);

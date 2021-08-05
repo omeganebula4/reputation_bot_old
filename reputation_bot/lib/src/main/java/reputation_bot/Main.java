@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 public class Main {
 	
 	public static JDA jda;
-	public static long guildID = 725268887238606871L;
+	public static long guildID = 828533325417152523L;
 	
 	public static void main(String[] args) throws LoginException, IOException, InterruptedException {
 		ReputationDAO reputationDAO = new ReputationDAO();
@@ -43,7 +43,7 @@ public class Main {
 		jdaBuilder.addEventListener(commandManager);
 		jdaBuilder.addEventListener(new RepDetect(reputationDAO));
 		jdaBuilder.addEventListener(new MemberHandler(reputationDAO));
-		jdaBuilder.addEventListener(new SelectMenuLeaderboard());
+		jdaBuilder.addEventListener(new LeaderboardInteractionHandler(reputationDAO));
 		commandManager.addCommandToRoot(new Addrep(reputationDAO));
 		commandManager.addCommandToRoot(new Remrep(reputationDAO));
 		commandManager.addCommandToRoot(new Setrep(reputationDAO));
