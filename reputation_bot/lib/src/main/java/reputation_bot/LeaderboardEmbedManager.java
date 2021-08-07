@@ -21,12 +21,12 @@ public class LeaderboardEmbedManager {
 	
 	public void sendEmbed(MessageChannel channel) {
 		LeaderboardEmbedBuilder embedBuilder = new LeaderboardEmbedBuilder();
-		if (CommandDetectionUtil.maxPages(repCol, embedBuilder.numPerPage) == 1) {
+		if (embedBuilder.maxPages(repCol, embedBuilder.numPerPage) == 1) {
 			channel.sendMessageEmbeds(embedBuilder.EmbedBuild(channel.getJDA().getGuildById(Main.guildID), repCol, currentPage, leaderboardName).build())
 				.setActionRow(Button.primary("left", Emoji.fromUnicode("U+2B05")).asDisabled(), Button.primary("right", Emoji.fromUnicode("U+27A1")).asDisabled())
 					.queue();
 		}
-		else if (CommandDetectionUtil.maxPages(repCol, embedBuilder.numPerPage) > 1) {
+		else if (embedBuilder.maxPages(repCol, embedBuilder.numPerPage) > 1) {
 			channel.sendMessageEmbeds(embedBuilder.EmbedBuild(channel.getJDA().getGuildById(Main.guildID), repCol, currentPage, leaderboardName).build())
 				.setActionRow(Button.primary("left", Emoji.fromUnicode("U+2B05")).asDisabled(), Button.primary("right", Emoji.fromUnicode("U+27A1")))
 					.queue();
@@ -45,24 +45,30 @@ public class LeaderboardEmbedManager {
 	
 	public static void editEmbedSend(ButtonClickEvent event) {
 		LeaderboardEmbedBuilder embedBuilder = new LeaderboardEmbedBuilder();
-		int caseNum = CommandDetectionUtil.embedPageDetection(repCol, embedBuilder.numPerPage, currentPage);
-		switch(caseNum) {
-		case 0:
-			event.editMessageEmbeds(embedBuilder.EmbedBuild(event.getGuild(), repCol, currentPage, leaderboardName).build())
-			.setActionRow(Button.primary("left", Emoji.fromUnicode("U+2B05")).asDisabled(), Button.primary("right", Emoji.fromUnicode("U+27A1")).asDisabled())
-				.queue();
-		case 1:
-			event.editMessageEmbeds(embedBuilder.EmbedBuild(event.getGuild(), repCol, currentPage, leaderboardName).build())
-			.setActionRow(Button.primary("left", Emoji.fromUnicode("U+2B05")).asDisabled(), Button.primary("right", Emoji.fromUnicode("U+27A1")))
-				.queue();
-		case 2:
-			event.editMessageEmbeds(embedBuilder.EmbedBuild(event.getGuild(), repCol, currentPage, leaderboardName).build())
-			.setActionRow(Button.primary("left", Emoji.fromUnicode("U+2B05")), Button.primary("right", Emoji.fromUnicode("U+27A1")).asDisabled())
-				.queue();
-		case 3:
-			event.editMessageEmbeds(embedBuilder.EmbedBuild(event.getGuild(), repCol, currentPage, leaderboardName).build())
-			.setActionRow(Button.primary("left", Emoji.fromUnicode("U+2B05")), Button.primary("right", Emoji.fromUnicode("U+27A1")))
-				.queue();
+		int maxPages = embedBuilder.maxPages(repCol, embedBuilder.numPerPage);
+		boolean leftDisable = true, rightDisable = true;
+		System.out.println(maxPages);
+		System.out.println(currentPage);
+		if (maxPages == 1) {
+			leftDisable = true;
+			rightDisable = true;
 		}
+		else if (maxPages > 1) {
+			if (currentPage <= 1) {
+				leftDisable = true;
+				rightDisable = false;
+			}
+			else if (currentPage >= maxPages) {
+				leftDisable = false;
+				rightDisable = true;
+			}
+			else {
+				leftDisable = false;
+				rightDisable = false;
+			}
+		}
+		event.editMessageEmbeds(embedBuilder.EmbedBuild(event.getGuild(), repCol, currentPage, leaderboardName).build())
+			.setActionRow(Button.primary("left", Emoji.fromUnicode("U+2B05")).withDisabled(leftDisable), Button.primary("right", Emoji.fromUnicode("U+27A1")).withDisabled(rightDisable))
+				.queue();
 	}
 }

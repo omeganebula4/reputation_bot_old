@@ -1,12 +1,9 @@
 package reputation_bot;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Sorts;
-
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -206,34 +203,5 @@ public class CommandDetectionUtil {
             }
     	}
         return returnint;
-    }
-    
-    //leaderboard detection utils
-	public static int maxPages(MongoCollection<ReputationData> leaderboardCol, int numPerPage) {
-		double numOfDocs = (double)leaderboardCol.countDocuments();
-		return (int)Math.ceil(((numOfDocs)/(numPerPage)));
-	}
-	
-	public static List<ReputationData> getReputationDetails(MongoCollection<ReputationData> leaderboardCol, int currentPage, int numPerPage) {
-		return leaderboardCol.find().sort(Sorts.descending("repAmount")).limit(numPerPage).skip((currentPage-1) * numPerPage).into(new ArrayList<ReputationData>());
-	}
-	
-    public static int embedPageDetection(MongoCollection<ReputationData> leaderboardCol, int numPerPage, int currentPage) {
-    	int returnint = 0;
-    	if (maxPages(leaderboardCol, numPerPage) == 1) {
-    		returnint = 0; //disable both buttons
-    	}
-    	else if (maxPages(leaderboardCol, numPerPage) > 1) {
-    		if (currentPage == 1) {
-    			returnint = 1; //disable only left button
-    		}
-    		else if (currentPage == maxPages(leaderboardCol, numPerPage)) {
-    			returnint = 2; //disable only right button
-    		}
-    		else {
-    			returnint = 3; //disable none
-    		}
-    	}
-    	return returnint;
     }
 }

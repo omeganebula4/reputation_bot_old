@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
@@ -25,9 +27,30 @@ public class RepDetect extends ListenerAdapter{
 	ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 	volatile List<Long> prison = new ArrayList<Long>();
 
+	@SuppressWarnings("unused")
+	private static List<String> extractURL(String str) {
+	    List<String> list = new ArrayList<>();
+	        
+	    String regex = "\\b((?:https?|ftp|file):"
+	          + "//[-a-zA-Z0-9+&@#/%?="
+	          + "~_|!:, .;]*[-a-zA-Z0-9+"
+	          + "&@#/%=~_|])";
+	  
+	    Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+	    Matcher m = p.matcher(str);
+	        
+	    while (m.find()) {
+	        list.add(str.substring(m.start(0), m.end(0)));
+	    }
+	    
+	    return list;
+	}
+	
+	@Override
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 		if (event.getGuild().getIdLong() == Main.guildID) {
 			String args = event.getMessage().getContentStripped();
+			args.replaceAll("\\b((?:https?|ftp|file):"+ "//[-a-zA-Z0-9+&@#/%?=" + "~_|!:, .;]*[-a-zA-Z0-9+" + "&@#/%=~_|])", "");
 			
 			String[] argslist = event.getMessage().getContentRaw().replaceAll("\\.","").split("\\s+");
 			List<String> list = Arrays.asList(argslist);
@@ -115,7 +138,7 @@ public class RepDetect extends ListenerAdapter{
 							prison.add(event.getAuthor().getIdLong());
 							scheduler.schedule(() -> {
 								prison.remove(event.getAuthor().getIdLong());
-							}, 50, TimeUnit.SECONDS);
+							}, 20, TimeUnit.SECONDS);
 							
 						}
 						

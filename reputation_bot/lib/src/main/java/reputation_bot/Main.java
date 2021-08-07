@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 public class Main {
 	
 	public static JDA jda;
-	public static long guildID = 828533325417152523L;
+	public static long guildID = 725268887238606871L;
 	
 	public static void main(String[] args) throws LoginException, IOException, InterruptedException {
 		ReputationDAO reputationDAO = new ReputationDAO();
