@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 
-import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -33,7 +32,7 @@ public class RepDetect extends ListenerAdapter {
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
 
 	private static final Pattern thanksPattern = Pattern.compile(
-			"\\W*([Tt]hn?x+|THN?X+|[tT]y+|TY+|[tT]hanks+|THANKS+|[tT]hanx+|THANX+|[tT]hank+ [yY]ou+|THANK+ YOU+|[tT]ysm+|TYSM+|[tT]yvm+|TYVM+|(ty){1,6}|Ty(ty){0,5}|(TY){1,6})(\\W*)(<@![0-9]{18}>)*(\\W*)");
+			"\\W*([Tt]hn?x+|THN?X+|[tT]y+|TY+|[tT]hanks+|THANKS+|[tT]hanx+|THANX+|[tT]hank+|THANK+|[tT]ysm+|TYSM+|[tT]yvm+|TYVM+|(ty){1,6}|Ty(ty){0,5}|(TY){1,6})(\\W*)(<@![0-9]{18}>)*(\\W*)");
 
 	private static List<String> getLinks(String str) {
 		List<String> returnList = new ArrayList<String>();
@@ -67,7 +66,6 @@ public class RepDetect extends ListenerAdapter {
 						message = message.replace(item, "");
 					}
 				}
-				System.out.println(message);
 
 				List<Member> memberList = event.getMessage().getMentionedMembers();
 				LinkedHashSet<Member> refinedMemberSet = new LinkedHashSet<Member>(memberList);
@@ -80,8 +78,7 @@ public class RepDetect extends ListenerAdapter {
 							removalList.add(event.getMember());
 							event.getChannel().sendTyping().queue();
 							event.getChannel()
-									.sendMessage("Beep Boop: Rep abuse detected. Don't try to give yourself rep..."
-											+ Emoji.fromUnicode("U+1F621").toString())
+									.sendMessage("Beep Boop: Rep abuse detected. Don't try to give yourself rep... :rage:")
 									.queue();
 						}
 

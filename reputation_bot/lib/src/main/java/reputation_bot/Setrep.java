@@ -71,6 +71,20 @@ public class Setrep extends AbstractCommand {
 				event.getChannel().sendMessage("Set <@" + name.getId() + ">'s alltime rep balance to " + list.get(2))
 						.queue();
 				break;
+			case 4:
+				reputationDAO.weeklyCollection.updateOne(
+						Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)),
+						Updates.set("repAmount", Integer.parseInt(list.get(2))));
+				reputationDAO.monthlyCollection.updateOne(
+						Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)),
+						Updates.set("repAmount", Integer.parseInt(list.get(2))));
+				reputationDAO.alltimeCollection.updateOne(
+						Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)),
+						Updates.set("repAmount", Integer.parseInt(list.get(2))));
+				event.getChannel().sendTyping().queue();
+				event.getChannel().sendMessage("Set <@" + name.getId() + ">'s rep balance to " + list.get(2) + " in all leaderboards.")
+						.queue();
+				break;
 			}
 		} else {
 			event.getChannel().sendTyping().queue();

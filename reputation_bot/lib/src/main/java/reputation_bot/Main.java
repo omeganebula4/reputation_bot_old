@@ -46,6 +46,7 @@ public class Main {
 		jdaBuilder.addEventListener(new RepDetect(reputationDAO));
 		jdaBuilder.addEventListener(new MemberHandler(reputationDAO));
 		jdaBuilder.addEventListener(new LeaderboardInteractionHandler(reputationDAO));
+		jdaBuilder.addEventListener(new CheckrepSlash(reputationDAO));
 		commandManager.addCommandToRoot(new Addrep(reputationDAO));
 		commandManager.addCommandToRoot(new Remrep(reputationDAO));
 		commandManager.addCommandToRoot(new Setrep(reputationDAO));

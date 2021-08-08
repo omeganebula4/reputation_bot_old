@@ -70,13 +70,26 @@ public class Addrep extends AbstractCommand {
 			case 4:
 				reputationDAO.weeklyCollection.updateOne(
 						Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)),
+						Updates.inc("repAmount", 1));
+				reputationDAO.monthlyCollection.updateOne(
+						Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)),
+						Updates.inc("repAmount", 1));
+				reputationDAO.alltimeCollection.updateOne(
+						Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)),
+						Updates.inc("repAmount", 1));
+				event.getChannel().sendTyping().queue();
+				event.getChannel().sendMessage("Added 1 rep to <@" + name.getId() + "> (All collections)").queue();
+				break;
+			case 5:
+				reputationDAO.weeklyCollection.updateOne(
+						Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)),
 						Updates.inc("repAmount", Integer.parseInt(list.get(2))));
 				event.getChannel().sendTyping().queue();
 				event.getChannel()
 						.sendMessage("Added " + list.get(2) + " rep to <@" + name.getId() + "> (Weekly collection)")
 						.queue();
 				break;
-			case 5:
+			case 6:
 				reputationDAO.monthlyCollection.updateOne(
 						Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)),
 						Updates.inc("repAmount", Integer.parseInt(list.get(2))));
@@ -85,13 +98,28 @@ public class Addrep extends AbstractCommand {
 						.sendMessage("Added " + list.get(2) + " rep to <@" + name.getId() + "> (Monthly collection)")
 						.queue();
 				break;
-			case 6:
+			case 7:
 				reputationDAO.alltimeCollection.updateOne(
 						Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)),
 						Updates.inc("repAmount", Integer.parseInt(list.get(2))));
 				event.getChannel().sendTyping().queue();
 				event.getChannel()
 						.sendMessage("Added " + list.get(2) + " rep to <@" + name.getId() + "> (Alltime collection)")
+						.queue();
+				break;
+			case 8:
+				reputationDAO.weeklyCollection.updateOne(
+						Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)),
+						Updates.inc("repAmount", Integer.parseInt(list.get(2))));
+				reputationDAO.monthlyCollection.updateOne(
+						Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)),
+						Updates.inc("repAmount", Integer.parseInt(list.get(2))));
+				reputationDAO.alltimeCollection.updateOne(
+						Filters.and(Filters.eq("memberID", name.getIdLong()), Filters.eq("guildID", Main.guildID)),
+						Updates.inc("repAmount", Integer.parseInt(list.get(2))));
+				event.getChannel().sendTyping().queue();
+				event.getChannel()
+						.sendMessage("Added " + list.get(2) + " rep to <@" + name.getId() + "> (All collections)")
 						.queue();
 				break;
 			}
@@ -111,7 +139,7 @@ public class Addrep extends AbstractCommand {
 
 	@Override
 	protected String usageMessage() {
-		return "%c [@user] (weekly/monthly/alltime) (number of rep) \n"
+		return "%c [@user] (weekly/monthly/alltime/all) (number of rep) \n"
 				+ "(number of rep) is an optional parameter. If not specified, default is 1.";
 
 	}
@@ -119,6 +147,8 @@ public class Addrep extends AbstractCommand {
 	@Override
 	protected String examplesMessage() {
 		return "%c @User#1234 alltime \n" + "Adds 1 reputation point in the alltime balance of User#1234."
-				+ "%c @User#1234 weekly 3 \n" + "Adds 3 reputation points in the weekly balance of User#1234.";
+				+ "%c @User#1234 all 3 \n"
+				+ "Adds 3 reputation points in all balances of User#1234  in all leaderboards.";
+
 	}
 }

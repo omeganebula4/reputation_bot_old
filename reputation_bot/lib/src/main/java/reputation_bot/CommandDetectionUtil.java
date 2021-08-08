@@ -95,6 +95,8 @@ public class CommandDetectionUtil {
 					returnint = 2; // monthly, rep = 1
 				} else if (list.get(1).equals("alltime")) {
 					returnint = 3; // alltime, rep = 1
+				} else if (list.get(1).equals("all")) {
+					returnint = 4;
 				} else {
 					returnint = 0;
 				}
@@ -105,11 +107,13 @@ public class CommandDetectionUtil {
 				if (isInteger(rep)) {
 					if (Integer.parseInt(rep) > 0) {
 						if (list.get(1).equals("weekly")) {
-							returnint = 4; // weekly, rep = list.get(2)
+							returnint = 5; // weekly, rep = list.get(2)
 						} else if (list.get(1).equals("monthly")) {
-							returnint = 5; // monthly, rep = list.get(2)
+							returnint = 6; // monthly, rep = list.get(2)
 						} else if (list.get(1).equals("alltime")) {
-							returnint = 6; // alltime, rep = list.get(2)
+							returnint = 7; // alltime, rep = list.get(2)
+						} else if (list.get(1).equals("all")) {
+							returnint = 8; // every db, rep = list.get(2)
 						} else {
 							returnint = 0;
 						}
@@ -140,6 +144,8 @@ public class CommandDetectionUtil {
 						returnint = 2; // monthly, rep = list.get(2)
 					} else if (list.get(1).equals("alltime")) {
 						returnint = 3; // alltime, rep = list.get(2)
+					} else if (list.get(1).equals("all")) {
+						returnint = 4;
 					} else {
 						returnint = 0;
 					}
